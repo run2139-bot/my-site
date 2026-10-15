@@ -10,3 +10,35 @@ cards.forEach((card) => {
     if (!wasActive) card.classList.add("active");
   });
 });
+
+// 다크모드 토글: 선택을 localStorage에 저장하고, 없으면 시스템 설정을 따릅니다.
+const root = document.documentElement;
+const toggle = document.createElement("button");
+toggle.className = "theme-toggle";
+toggle.type = "button";
+document.body.appendChild(toggle);
+
+function applyTheme(theme) {
+  root.dataset.theme = theme;
+  toggle.textContent = theme === "dark" ? "☀️" : "🌙";
+  toggle.setAttribute(
+    "aria-label",
+    theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"
+  );
+}
+
+let saved = null;
+try {
+  saved = localStorage.getItem("theme");
+} catch (e) {}
+applyTheme(
+  saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+);
+
+toggle.addEventListener("click", () => {
+  const next = root.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(next);
+  try {
+    localStorage.setItem("theme", next);
+  } catch (e) {}
+});
